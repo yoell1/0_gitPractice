@@ -48,33 +48,19 @@ public class MemberController {
 	 * 회원 등록 URL : [POST] /member/insert Parameter : age (나이) , email (이메일), name
 	 * (이름) => MemberDTO로 한번에 받을 수 있음
 	 */
-	@PostMapping("/insert")
-	public String insert(MemberDTO member) {
-		// 전달된 회원 정보 (이름, 이메일, 나이)
-		// --> 회원 번호 (시퀀스)
-		String sql = "INSERT INTO member (id, name, email, age) " + "VALUES (SEQ_MEMBER_ID.NEXTVAL, ?, ?, ?)";
-
-		// Connection 객체 생성, PreparedStatement 객체 생성 후 ? 값 채우기
-		try (Connection conn = DBUtil.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, member.getName());
-			pstmt.setString(2, member.getEmail());
-			pstmt.setInt(3, member.getAge());
-
-			// 쿼리문 실행 후 결과 받기
-			int result = pstmt.executeUpdate();
-
-			if (result > 0) {
-				System.out.println("회원 추가 성공!");
-			} else {
-				System.out.println("회원 추가 실패..");
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return "redirect:/member/list";
-	}
+	  /*
+     * 회원 등록 URL : [POST] /member/insert 
+     * Parameter : age (나이) , email (이메일), name (이름) => MemberDTO로 한번에 받을 수 있음
+     */
+    @PostMapping("/insert")
+    public String insert(MemberDTO member) {
+        
+        // 1. [수정] 직접 요리하던 JDBC 코드를 다 지우고, 서비스에게 데이터 저장을 위임합니다.
+        service.insertMember(member); 
+        
+        // 2. 저장이 끝나면 회원 목록 화면으로 리다이렉트합니다.
+        return "redirect:/member/list";
+    }
 
 	/*
 	 * 회원 삭제 URL : [GET] /member/delete/{id}

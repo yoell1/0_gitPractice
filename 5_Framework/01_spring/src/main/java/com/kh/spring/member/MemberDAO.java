@@ -62,6 +62,26 @@ public class MemberDAO {
 	// 회원 추가
 	// => 전달된 회원 정보를 member 테이블에 추가하는 메소드
 	public void insert(MemberDTO member) {
+		String sql = "INSERT INTO member (id, name, email, age) VALUES (SEQ_MEMBER_ID.NEXTVAL, ?, ?, ?)";
+
+	    try (Connection conn = DBUtil.getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        
+	        // 컨트롤러에서 하던 ? 값 채우기를 여기서 수행합니다.
+	        pstmt.setString(1, member.getName());
+	        pstmt.setString(2, member.getEmail());
+	        pstmt.setInt(3, member.getAge());
+	        
+	        // 쿼리 실행
+	        int result = pstmt.executeUpdate();
+	        if (result > 0) {
+	            System.out.println("★ [DAO] DB 새 회원 등록 성공!");
+	        }
+	        
+	    } catch (SQLException e) {
+	        System.out.println("🚨 [DAO] 회원 추가 중 SQL 예외 발생!");
+	        e.printStackTrace();
+	    }
 
 	}
 
@@ -92,7 +112,7 @@ public class MemberDAO {
 	
 	// 회원 정보 수정 => 전달된 회원 정보를 기준으로 테이블 데이터를 변경하는 메소드
 	public void update(MemberDTO member) {
-	    // ⚠️ 주의: 키워드(SET, WHERE)와 컬럼명 사이에 공백을 꼭 확인하세요.
+	   
 	    String sql = "UPDATE member SET name = ?, email = ?, age = ? WHERE id = ?";
 
 	    try (Connection conn = DBUtil.getConnection();
