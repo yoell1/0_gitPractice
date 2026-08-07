@@ -1,8 +1,5 @@
 package com.kh.spring.member;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -11,8 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.kh.spring.util.DBUtil;
 
 /*
  *  컨트롤러
@@ -48,19 +43,19 @@ public class MemberController {
 	 * 회원 등록 URL : [POST] /member/insert Parameter : age (나이) , email (이메일), name
 	 * (이름) => MemberDTO로 한번에 받을 수 있음
 	 */
-	  /*
-     * 회원 등록 URL : [POST] /member/insert 
-     * Parameter : age (나이) , email (이메일), name (이름) => MemberDTO로 한번에 받을 수 있음
-     */
-    @PostMapping("/insert")
-    public String insert(MemberDTO member) {
-        
-        // 1. [수정] 직접 요리하던 JDBC 코드를 다 지우고, 서비스에게 데이터 저장을 위임합니다.
-        service.insertMember(member); 
-        
-        // 2. 저장이 끝나면 회원 목록 화면으로 리다이렉트합니다.
-        return "redirect:/member/list";
-    }
+	/*
+	 * 회원 등록 URL : [POST] /member/insert Parameter : age (나이) , email (이메일), name
+	 * (이름) => MemberDTO로 한번에 받을 수 있음
+	 */
+	@PostMapping("/insert")
+	public String insert(MemberDTO member) {
+
+		// 1. [수정] 직접 요리하던 JDBC 코드를 다 지우고, 서비스에게 데이터 저장을 위임합니다.
+		service.insertMember(member);
+
+		// 2. 저장이 끝나면 회원 목록 화면으로 리다이렉트합니다.
+		return "redirect:/member/list";
+	}
 
 	/*
 	 * 회원 삭제 URL : [GET] /member/delete/{id}
@@ -75,22 +70,29 @@ public class MemberController {
 
 	}
 
-	 /* 1. 수정 폼 화면 이동 (DB 조회 없이 hidden 데이터를 토스하여 화면만 열기) */
-    @PostMapping("/updateForm") 
-    public String updateForm(MemberDTO member, Model model) {
-        // list.jsp에서 보낸 데이터가 member 객체에 자동으로 담깁니다.
-        model.addAttribute("member", member);
-        
-        return "member/updateForm"; // views/member/updateForm.jsp 화면 오픈!
-    }
+	/**
+	 * 회원 수정--> U ()UpDate URL : [POST] /member/update 요청 파라미터 : {id: 회원번호, name :
+	 * 이름, email: 이메일, age: 나이} --->MemberDTO
+	 */
 
-    /* 2. 실제 DB 데이터 수정 처리 (updateForm.jsp에서 [수정 완료] 누르면 실행) */
-    @PostMapping("/update") 
-    public String update(MemberDTO member) {
-        // 서비스단을 거쳐 실제 Oracle DB 데이터 변경 수행
-        service.updateMember(member);
-        
-        // 수정 완료 후 회원 목록 조회 URL로 화면을 새로고침(리다이렉트)
-        return "redirect:/member/list";
-    }
+	@PostMapping("/update")
+	public String update(MemberDTO member) {
+		// 서비스로 수겅 요청
+		service.updateMember(member);
+		return "redirect:/member/list";
+	}
+
+	/**
+	 * 회원 수정 페이지 응답 [GET] /member/update/회원번호
+	 */
+
+	@GetMapping("/update/{id}")
+	public String updateForm(@PathVariable("id") int id, Model model) {
+		// 회원 번호를 기준으로 회원 정보를 조회
+		MemberDTO member = service.getMember(id);
+		// request 영역에 회원 정보 저장
+		model.addAttribute("member", member);
+		return "/member/updateForm";
+
+	}
 }
