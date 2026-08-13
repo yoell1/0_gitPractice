@@ -1,0 +1,140 @@
+body {
+    font-family: "Malgun Gothic", sans-serif;
+    background-color: #f4f6f8;
+    color: #333;
+    margin: 40px;
+}
+
+h1 {
+    color: #2c3e50;
+    border-bottom: 3px solid #3498db;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.toolbar {
+    margin-bottom: 25px;
+}
+
+.toolbar a {
+    text-decoration: none;
+    color: #3498db;
+    margin-right: 20px;
+    font-weight: bold;
+}
+
+.toolbar a:hover {
+    text-decoration: underline;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 900px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px 12px;
+    text-align: center;
+}
+
+th {
+    background-color: #3498db;
+    color: #fff;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #eef7ff;
+}
+
+button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+form[action*="delete"] button {
+    background-color: #e74c3c;
+}
+
+form[action*="delete"] button:hover {
+    background-color: #c0392b;
+}
+
+input[type="text"], input[type="number"], select {
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 200px;
+}
+
+.reset-area {
+    max-width: 900px;
+    text-align: right;
+    margin-top: 15px;
+}
+
+.form-card {
+    background-color: #fff;
+    max-width: 500px;
+    padding: 25px 30px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-card table {
+    box-shadow: none;
+    width: 100%;
+}
+
+.form-card th {
+    background-color: #f0f4f8;
+    color: #2c3e50;
+    width: 100px;
+}
+
+.form-card .form-actions {
+    margin-top: 20px;
+}
+
+.form-card .form-actions a {
+    margin-left: 15px;
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.form-card .form-actions a:hover {
+    text-decoration: underline;
+}
+
+.hero-image {
+    display: block;
+    width: 100%;
+    margin: 30px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.grand-total-row {
+    font-weight: bold;
+    background-color: #eaf3fb !important;
+}
+
+.grand-total-row td {
+    border-top: 2px solid #3498db;
+}
