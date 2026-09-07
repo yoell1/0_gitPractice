@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.bowling.mapper.MemberMapper">
+
+    <resultMap id="memberResultMap" type="com.kh.bowling.model.MemberDTO">
+        <id     property="bowlerId"   column="BOWLER_ID" />
+        <result property="name"       column="NAME" />
+        <result property="laneNumber" column="LANE_NUMBER" />
+        <result property="gameCount"  column="GAME_COUNT" />
+        <result property="grade"      column="GRADE" />
+        <result property="status"     column="STATUS" />
+    </resultMap>
+
+    <resultMap id="billingResultMap" type="com.kh.bowling.model.BillingDTO">
+        <id     property="billingId"   column="BILLING_ID" />
+        <result property="bowlerId"    column="BOWLER_ID" />
+        <result property="totalFee"    column="TOTAL_FEE" />
+        <result property="paymentDate" column="PAYMENT_DATE" />
+        <result property="bowlerName"  column="NAME" />
+    </resultMap>
+
+    <!-- 신규 볼러 등록 (BOWLER_ID는 시퀀스로 채번, STATUS는 'Y' 고정) -->
+    <insert id="insertBowler" parameterType="com.kh.bowling.model.MemberDTO">
+        INSERT INTO BOWLER (BOWLER_ID, NAME, LANE_NUMBER, GAME_COUNT, GRADE, STATUS)
+        VALUES (SEQ_BOWLER_ID.NEXTVAL, #{name}, #{laneNumber}, #{gameCount}, #{grade}, 'Y')
+    </insert>
+
+    <!-- 현재 이용중(STATUS='Y')인 볼러 목록 조회 -->
+    <select id="selectActiveList" resultMap="memberResultMap">
+        SELECT BOWLER_ID, NAME, LANE_NUMBER, GAME_COUNT, GRADE, STATUS
+        FROM BOWLER
+        WHERE STATUS = 'Y'
+        ORDER BY BOWLER_ID DESC
+    </select>
+
+    <!-- 정산 시 요금 계산에 필요한 GAME_COUNT, GRADE를 보기 위한 단건 조회 -->
+    <select id="selectOne" parameterType="int" resultMap="memberResultMap">
+        SELECT BOWLER_ID, GAME_COUNT, GRADE
+        FROM BOWLER
+        WHERE BOWLER_ID = #{bowlerId}
+    </select>
+
+    <!-- 정산 완료 처리: 삭제하지 않고 STATUS만 'N'으로 변경 -->
+    <update id="updateStatusToN" parameterType="int">
+        UPDATE BOWLER SET STATUS = 'N' WHERE BOWLER_ID = #{bowlerId}
+    </update>
+
+    <!-- 회원 물리 삭제 (FK의 ON DELETE CASCADE로 BILLING 이력도 같이 삭제됨) -->
+    <delete id="deleteBowler" parameterType="int">
+        DELETE FROM BOWLER WHERE BOWLER_ID = #{bowlerId}
+    </delete>
+
+    <!-- 정산 내역 insert (BILLING_ID는 시퀀스 채번, 결제일자는 SYSDATE 기본값) -->
+    <insert id="insertBilling" parameterType="com.kh.bowling.model.BillingDTO">
+        INSERT INTO BILLING (BILLING_ID, BOWLER_ID, TOTAL_FEE)
+        VALUES (SEQ_BILLING_ID.NEXTVAL, #{bowlerId}, #{totalFee})
+    </insert>
+
+    <!-- 전체 리셋 1단계: BOWLER 전부 삭제 (CASCADE로 BILLING도 같이 삭제) -->
+    <delete id="deleteAllBowlers">
+        DELETE FROM BOWLER
+    </delete>
+
+    <!-- 전체 리셋 2단계: BOWLER_ID 시퀀스 초기화 -->
+    <update id="resetBowlerSequence">
+        ALTER SEQUENCE SEQ_BOWLER_ID RESTART START WITH 1
+    </update>
+
+    <!-- 전체 리셋 3단계: BILLING_ID 시퀀스 초기화 -->
+    <update id="resetBillingSequence">
+        ALTER SEQUENCE SEQ_BILLING_ID RESTART START WITH 1
+    </update>
+
+    <!-- 정산 건별 전체 조회 (BOWLER와 조인해서 회원명도 같이, 최신순) -->
+    <select id="selectAllBilling" resultMap="billingResultMap">
+        SELECT B.BILLING_ID, B.BOWLER_ID, B.TOTAL_FEE, B.PAYMENT_DATE, W.NAME
+        FROM BILLING B JOIN BOWLER W ON B.BOWLER_ID = W.BOWLER_ID
+        ORDER BY B.PAYMENT_DATE DESC
+    </select>
+
+</mapper>
